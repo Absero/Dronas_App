@@ -1,6 +1,5 @@
 package com.puslapis.myapplication;
 
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.view.View;
 

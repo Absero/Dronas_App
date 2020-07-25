@@ -1,33 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".Main">
+
     <data>
+
         <variable
             name="viewModel"
             type="com.puslapis.myapplication.ViewModel" />
     </data>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="match_parent"
+        <io.github.controlwear.virtual.joystick.android.JoystickView
+            android:id="@+id/mainLeftJoystick"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="100sp"
-            android:visibility="@{viewModel.matomasUzrasas(viewModel.mMatomas)}"
-            android:text="Start"/>
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="1dp"
+            custom:JV_backgroundColor="#009688"
+            custom:JV_borderColor="#00796B"
+            custom:JV_borderWidth="4dp"
+            custom:JV_buttonColor="#FF6E40"
+            custom:JV_buttonSizeRatio="15%"
+            custom:JV_fixedCenter="false" />
 
-        <Button
-            android:layout_width="match_parent"
+        <io.github.controlwear.virtual.joystick.android.JoystickView
+            android:id="@+id/mainRightJoystick"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:onClick="Button_Click"
-            android:text="button"/>
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="1dp"
+            custom:JV_backgroundColor="#009688"
+            custom:JV_borderColor="#00796B"
+            custom:JV_borderWidth="4dp"
+            custom:JV_buttonColor="#FF6E40"
+            custom:JV_buttonSizeRatio="15%"
+            custom:JV_fixedCenter="false" />
 
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/mainLeftJoystick"
+            android:orientation="horizontal"
+            tools:ignore="UselessLeaf" />
+
+
+
+    </RelativeLayout>
 </layout>

@@ -11,7 +11,7 @@
         android:allowBackup="false">
         <activity
             android:name=".Main"
-            android:screenOrientation="portrait">
+            android:screenOrientation="sensorLandscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
