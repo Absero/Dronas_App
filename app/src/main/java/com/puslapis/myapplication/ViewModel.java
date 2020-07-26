@@ -5,24 +5,40 @@ import android.view.View;
 
 import androidx.databinding.BaseObservable;
 import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ObservableDouble;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableInt;
+
+import java.util.Locale;
 
 public class ViewModel extends BaseObservable {
 
     private Context kontekstas;
 
-//    public final ObservableField<Objektas> mObjektas = new ObservableField<>();
-    public final ObservableInt mLeftKampas = new ObservableInt(0);
-    public final ObservableInt mLeftStr = new ObservableInt(0);
-    public final ObservableInt mRightKampas = new ObservableInt(0);
-    public final ObservableInt mRightStr = new ObservableInt(0);
+
+    /**
+     * svarbiausios vertes
+     */
+    public final ObservableInt mMotorStr = new ObservableInt(0);
+
+    /**
+     * misc kintamieji
+     */
+    public final ObservableDouble mLeftX = new ObservableDouble(0);
+    public final ObservableDouble mLeftY = new ObservableDouble(0);
+    public final ObservableDouble mRightX = new ObservableDouble(0);
+    public final ObservableDouble mRightY = new ObservableDouble(0);
+    public final ObservableInt maxSpeed = new ObservableInt(0);
 
     public ViewModel(Context context) {
         this.kontekstas = context;
     }
 
-    public String kampas(int kampas){return String.valueOf(kampas);}
-    public String strength(int strength){return String.valueOf(strength);}
+    /**
+     * funkcijos atvaizdavimui
+     */
+    public String coordX(double x){return String.format(Locale.ENGLISH,"%.2f", x);}
+    public String coordY(double y){return String.format(Locale.ENGLISH,"%.2f", y);}
+    public int getMotorStr(double str){return (int)str;}
 
 }

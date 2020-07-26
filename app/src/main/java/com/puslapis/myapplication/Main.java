@@ -7,26 +7,29 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 
 import com.puslapis.myapplication.databinding.MainBinding;
+import com.puslapis.myapplication.misc.Helper;
 import com.puslapis.myapplication.other.HorizontalNumberPicker;
 
 import io.github.controlwear.virtual.joystick.android.JoystickView;
 
 public class Main extends AppCompatActivity {
+    private final String TAG = "Main";
 
-    public ViewModel mViewModel;
-
-    public SeekBar mGreicioRibotuvas;
+    private ViewModel mViewModel;
+    private DronoValdymas mDronoValdymas;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //region prazia ir lango nustatymai
         super.onCreate(savedInstanceState);
-
         MainBinding mainBinding = DataBindingUtil.setContentView(this, R.layout.main);
 
         getWindow().getDecorView().setSystemUiVisibility(
@@ -46,34 +49,41 @@ public class Main extends AppCompatActivity {
         ((HorizontalNumberPicker) (findViewById(R.id.mainCoeffBL))).setValue(sharedPref.getInt("Coeff_BL", 0));
         ((HorizontalNumberPicker) (findViewById(R.id.mainCoeffFR))).setValue(sharedPref.getInt("Coeff_FR", 0));
         ((HorizontalNumberPicker) (findViewById(R.id.mainCoeffBR))).setValue(sharedPref.getInt("Coeff_BR", 0));
+        //endregion
 
         mViewModel = new ViewModel(this);
         mainBinding.setViewModel(mViewModel);
+        mDronoValdymas = new DronoValdymas(this, mViewModel);
 
-        mGreicioRibotuvas = findViewById(R.id.mainGreicioRibotuvas);
+        final SeekBar mGreicioRibotuvas = findViewById(R.id.mainGreicioRibotuvas);
         mGreicioRibotuvas.setMax(Glob.maksimaliReiksme);
         mGreicioRibotuvas.setProgress(Glob.maksimaliReiksme / 2);
+        ((ProgressBar)(findViewById(R.id.mainGreitis))).setMax(Glob.maksimaliReiksme);
 
         ((JoystickView) (findViewById(R.id.mainLeftJoystick))).setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
             public void onMove(int angle, int strength) {
-                mViewModel.mLeftKampas.set(angle);
-                mViewModel.mLeftStr.set(strength);
+                double[] temp = Helper.Pole2XY(strength, angle);
+                mViewModel.mLeftX.set(temp[0]);
+                mViewModel.mLeftY.set(temp[1]);
+
+                mDronoValdymas.ChangeMotorStr();
+
             }
-        }, 20);
+        }, 1000/Glob.daznis);
 
         ((JoystickView) (findViewById(R.id.mainRightJoystick))).setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
             public void onMove(int angle, int strength) {
-                mViewModel.mRightKampas.set(angle);
-                mViewModel.mRightStr.set(strength);
+                double[] temp = Helper.Pole2XY(strength, angle);
+                mViewModel.mRightX.set(temp[0]);
+                mViewModel.mRightY.set(temp[1]);
             }
-        }, 20);
+        }, 1000/Glob.daznis);
 
     }
 
     //region funkcionavimo funkcijos
-
 
     @Override
     protected void onPause() {
@@ -123,5 +133,10 @@ public class Main extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
     }
+
     //endregion funkcionavimo funkcijos
+
+    public void resetAll_Click(View view) {
+        mDronoValdymas.ResetAll();
+    }
 }
