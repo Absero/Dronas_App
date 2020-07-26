@@ -1,9 +1,6 @@
 package com.puslapis.myapplication;
 
 import android.content.Context;
-import android.util.Log;
-
-import androidx.databinding.ObservableInt;
 
 public class DronoValdymas {
     private final String TAG = "DronoValdymas";
@@ -11,7 +8,7 @@ public class DronoValdymas {
     private Main context;
     private ViewModel mViewModel;
 
-    private double currentMotorSTR_double = 0;
+    private double mCurrentMotorSTR_double = 0;
 
     private double mMotorFL_delta = 0;
     private double mMotorFR_delta = 0;
@@ -26,74 +23,80 @@ public class DronoValdymas {
 
     public void ChangeAllMotorStr() {
         double delta = mViewModel.mLeftY.get() * Glob.maxPadidejimasPerCikla;
-        double apskaiciuota = delta + currentMotorSTR_double;
+        double apskaiciuota = delta + mCurrentMotorSTR_double;
 
         if (apskaiciuota > mViewModel.maxSpeed.get()) apskaiciuota = mViewModel.maxSpeed.get();
         if (apskaiciuota > Glob.maksimaliReiksme) apskaiciuota = Glob.maksimaliReiksme;
         if (apskaiciuota < 0) apskaiciuota = 0;
-        currentMotorSTR_double = apskaiciuota;
+        mCurrentMotorSTR_double = apskaiciuota;
 
         mViewModel.mMotorStr.set((int) apskaiciuota);
-        mViewModel.mMotorFL.set((int) ((int) apskaiciuota + mMotorFL_delta + context.mCoeffFL.getValue()));
-        mViewModel.mMotorFR.set((int) ((int) apskaiciuota + mMotorFR_delta + context.mCoeffFR.getValue()));
-        mViewModel.mMotorBL.set((int) ((int) apskaiciuota + mMotorBL_delta + context.mCoeffBL.getValue()));
-        mViewModel.mMotorBR.set((int) ((int) apskaiciuota + mMotorBR_delta + context.mCoeffBR.getValue()));
+        UpdateAllMotorValues();
     }
 
     public void ChangeIndMotorStr() {
-        double currentX = mViewModel.mRightX.get();
-        double currentY = mViewModel.mRightY.get();
+        double x = mViewModel.mRightX.get();
+        double y = mViewModel.mRightY.get();
 
-        mMotorFL_delta = CalculateMotorValue(currentX, currentY, "FL");
-        mMotorFR_delta = CalculateMotorValue(currentX, currentY, "FR");
-        mMotorBL_delta = CalculateMotorValue(currentX, currentY, "BL");
-        mMotorBR_delta = CalculateMotorValue(currentX, currentY, "BR");
+        //X+ Y-
+        mMotorFL_delta = (int) (((x < 0 ? 0 : x) + (y > 0 ? 0 : -y)) * Glob.maksimaliVienoMotoroAmplitude);
+        //X- Y-
+        mMotorFR_delta = (int) (((x > 0 ? 0 : -x) + (y > 0 ? 0 : -y)) * Glob.maksimaliVienoMotoroAmplitude);
+        //X+ Y+
+        mMotorBL_delta = (int) (((x < 0 ? 0 : x) + (y < 0 ? 0 : y)) * Glob.maksimaliVienoMotoroAmplitude);
+        //X- Y+
+        mMotorBR_delta = (int) (((x > 0 ? 0 : -x) + (y < 0 ? 0 : y)) * Glob.maksimaliVienoMotoroAmplitude);
 
-        mViewModel.mMotorFL.set((int) (currentMotorSTR_double + mMotorFL_delta + context.mCoeffFL.getValue()));
-        mViewModel.mMotorFR.set((int) (currentMotorSTR_double + mMotorFR_delta + context.mCoeffFL.getValue()));
-        mViewModel.mMotorBL.set((int) (currentMotorSTR_double + mMotorBL_delta + context.mCoeffFL.getValue()));
-        mViewModel.mMotorBR.set((int) (currentMotorSTR_double + mMotorBR_delta + context.mCoeffFL.getValue()));
+        UpdateAllMotorValues();
     }
 
-    private int CalculateMotorValue(double x, double y, String motor) {
-        int stiprumas = 0;
+    private void UpdateAllMotorValues() {
+        mViewModel.mMotorFL.set(CalculateIndMotorValue("FL"));
+        mViewModel.mMotorFR.set(CalculateIndMotorValue("FR"));
+        mViewModel.mMotorBL.set(CalculateIndMotorValue("BL"));
+        mViewModel.mMotorBR.set(CalculateIndMotorValue("BR"));
+    }
+
+    private int CalculateIndMotorValue(String motor) {
+        double delta = 0;
+        int coeff = 0;
+
         switch (motor) {
             case "FL":
-                //X+ Y-
-                stiprumas = (int) ((x < 0 ? 0 : x) * Glob.maksimaliVienoMotoroAmplitude + (y > 0 ? 0 : -y) * Glob.maksimaliVienoMotoroAmplitude);
+                delta = mMotorFL_delta;
+                coeff = context.mCoeffFL.getValue();
                 break;
             case "FR":
-                //X- Y-
-                stiprumas = (int) ((x > 0 ? 0 : -x) * Glob.maksimaliVienoMotoroAmplitude + (y > 0 ? 0 : -y) * Glob.maksimaliVienoMotoroAmplitude);
+                delta = mMotorFR_delta;
+                coeff = context.mCoeffFR.getValue();
                 break;
             case "BL":
-                //X+ Y+
-                stiprumas = (int) ((x < 0 ? 0 : x) * Glob.maksimaliVienoMotoroAmplitude + (y < 0 ? 0 : y) * Glob.maksimaliVienoMotoroAmplitude);
+                delta = mMotorBL_delta;
+                coeff = context.mCoeffBL.getValue();
                 break;
             case "BR":
-                //X- Y+
-                stiprumas = (int) ((x > 0 ? 0 : -x) * Glob.maksimaliVienoMotoroAmplitude + (y < 0 ? 0 : y) * Glob.maksimaliVienoMotoroAmplitude);
+                delta = mMotorBR_delta;
+                coeff = context.mCoeffBR.getValue();
                 break;
             default:
         }
-        return stiprumas;
+        return (int) mCurrentMotorSTR_double + (int) delta + coeff;
+
     }
 
     public void ResetAll() {
         //reset locals
-        currentMotorSTR_double = 0;
+        mCurrentMotorSTR_double = 0;
         mMotorFL_delta = 0;
         mMotorFR_delta = 0;
         mMotorBL_delta = 0;
         mMotorBR_delta = 0;
 
         //reset observables
-        mViewModel.mMotorStr.set((int) currentMotorSTR_double);
+        mViewModel.mMotorStr.set((int) mCurrentMotorSTR_double);
         mViewModel.mMotorFL.set(0);
         mViewModel.mMotorFR.set(0);
         mViewModel.mMotorBL.set(0);
         mViewModel.mMotorBR.set(0);
     }
-
-
 }
