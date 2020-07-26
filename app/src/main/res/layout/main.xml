@@ -132,7 +132,7 @@
                     android:layout_height="50dp"
                     android:clickable="false"
                     android:indeterminate="false"
-                    android:progress="40"
+                    android:progress="@{viewModel.mMotorFL}"
                     android:progressDrawable="@drawable/custom_gauge" />
 
                 <ProgressBar
@@ -142,7 +142,7 @@
                     android:layout_height="50dp"
                     android:clickable="false"
                     android:indeterminate="false"
-                    android:progress="40"
+                    android:progress="@{viewModel.mMotorFR}"
                     android:progressDrawable="@drawable/custom_gauge" />
 
             </LinearLayout>
@@ -161,7 +161,7 @@
                     android:layout_height="50dp"
                     android:clickable="false"
                     android:indeterminate="false"
-                    android:progress="40"
+                    android:progress="@{viewModel.mMotorBL}"
                     android:progressDrawable="@drawable/custom_gauge" />
 
                 <ProgressBar
@@ -171,7 +171,7 @@
                     android:layout_height="50dp"
                     android:clickable="false"
                     android:indeterminate="false"
-                    android:progress="40"
+                    android:progress="@{viewModel.mMotorBR}"
                     android:progressDrawable="@drawable/custom_gauge" />
 
             </LinearLayout>

@@ -13,11 +13,14 @@ import androidx.annotation.Nullable;
 
 import com.puslapis.myapplication.R;
 
+import io.github.controlwear.virtual.joystick.android.JoystickView;
+
 public class HorizontalNumberPicker extends LinearLayout {
     private final String TAG = "HorizontalPicker";
     private TextView et_number;
     private int min=-10, max=10;
     private int pokytis = 1;
+    private OnChangeListener mCallback;
 
     public HorizontalNumberPicker(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -25,6 +28,13 @@ public class HorizontalNumberPicker extends LinearLayout {
         inflate(context, R.layout.numberpicker_horizontal, this);
 
         et_number = findViewById(R.id.et_number);
+        et_number.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                et_number.setText("0");
+                mCallback.onMove();
+            }
+        });
 
         final Button btn_less = findViewById(R.id.btn_less);
         btn_less.setOnClickListener(new AddHandler(-pokytis));
@@ -54,6 +64,7 @@ public class HorizontalNumberPicker extends LinearLayout {
             }
 
             et_number.setText(String.valueOf(newValue));
+            mCallback.onMove();
         }
     }
 
@@ -100,5 +111,14 @@ public class HorizontalNumberPicker extends LinearLayout {
 
     public void setMax(int max) {
         this.max = max;
+    }
+
+    public void setOnChangeListener(OnChangeListener l) { mCallback = l; }
+
+    /**
+     *  interface for value changed
+     */
+    public interface OnChangeListener {
+        void onMove();
     }
 }

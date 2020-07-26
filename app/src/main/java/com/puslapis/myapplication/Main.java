@@ -3,13 +3,10 @@ package com.puslapis.myapplication;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
@@ -19,12 +16,23 @@ import com.puslapis.myapplication.misc.Helper;
 import com.puslapis.myapplication.other.HorizontalNumberPicker;
 
 import io.github.controlwear.virtual.joystick.android.JoystickView;
+/* naudingi linkai
+    https://stackoverflow.com/questions/2695646/declaring-a-custom-android-ui-element-using-xml kaip sukurti custom elementa su nustatymais xml faile
+ */
+
+/* TODO:
+ *      kai nera nauju reiksmiu galima siust tiesiog HOLD komanda (reikia deliot visur kad pasikeite reiksme)
+ *      koeficientu gal nereikia siust kartu susumuotai su viskuo, gal reik irasyt paciam drone? (galima tiesiog atminusuot pries siunciant)
+ *      paciam drone galima padaryt fifo su dinaminiu masyvu kuriam dedami paketai arba tiesiog kiekvienai komandai paskirt vieta
+ */
 
 public class Main extends AppCompatActivity {
     private final String TAG = "Main";
 
     private ViewModel mViewModel;
     private DronoValdymas mDronoValdymas;
+
+    HorizontalNumberPicker mCoeffFL, mCoeffFR, mCoeffBL, mCoeffBR;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +57,49 @@ public class Main extends AppCompatActivity {
         ((HorizontalNumberPicker) (findViewById(R.id.mainCoeffBL))).setValue(sharedPref.getInt("Coeff_BL", 0));
         ((HorizontalNumberPicker) (findViewById(R.id.mainCoeffFR))).setValue(sharedPref.getInt("Coeff_FR", 0));
         ((HorizontalNumberPicker) (findViewById(R.id.mainCoeffBR))).setValue(sharedPref.getInt("Coeff_BR", 0));
+
+        mCoeffFL = findViewById(R.id.mainCoeffFL);
+        mCoeffFL.setMax(Glob.maksimaliReiksme);
+        mCoeffFL.setMin(-Glob.maksimaliReiksme);
+        mCoeffFL.setOnChangeListener(new HorizontalNumberPicker.OnChangeListener() {
+            @Override
+            public void onMove() {
+                mDronoValdymas.ChangeAllMotorStr();
+            }
+        });
+        mCoeffFR = findViewById(R.id.mainCoeffFR);
+        mCoeffFR.setMax(Glob.maksimaliReiksme);
+        mCoeffFR.setMin(-Glob.maksimaliReiksme);
+        mCoeffFR.setOnChangeListener(new HorizontalNumberPicker.OnChangeListener() {
+            @Override
+            public void onMove() {
+                mDronoValdymas.ChangeAllMotorStr();
+            }
+        });
+        mCoeffBL = findViewById(R.id.mainCoeffBL);
+        mCoeffBL.setMax(Glob.maksimaliReiksme);
+        mCoeffBL.setMin(-Glob.maksimaliReiksme);
+        mCoeffBL.setOnChangeListener(new HorizontalNumberPicker.OnChangeListener() {
+            @Override
+            public void onMove() {
+                mDronoValdymas.ChangeAllMotorStr();
+            }
+        });
+        mCoeffBR = findViewById(R.id.mainCoeffBR);
+        mCoeffBR.setMax(Glob.maksimaliReiksme);
+        mCoeffBR.setMin(-Glob.maksimaliReiksme);
+        mCoeffBR.setOnChangeListener(new HorizontalNumberPicker.OnChangeListener() {
+            @Override
+            public void onMove() {
+                mDronoValdymas.ChangeAllMotorStr();
+            }
+        });
+
+        ((ProgressBar) findViewById(R.id.mainFL)).setMax(Glob.maksimaliReiksme);
+        ((ProgressBar) findViewById(R.id.mainFR)).setMax(Glob.maksimaliReiksme);
+        ((ProgressBar) findViewById(R.id.mainBL)).setMax(Glob.maksimaliReiksme);
+        ((ProgressBar) findViewById(R.id.mainBR)).setMax(Glob.maksimaliReiksme);
+
         //endregion
 
         mViewModel = new ViewModel(this);
@@ -58,7 +109,7 @@ public class Main extends AppCompatActivity {
         final SeekBar mGreicioRibotuvas = findViewById(R.id.mainGreicioRibotuvas);
         mGreicioRibotuvas.setMax(Glob.maksimaliReiksme);
         mGreicioRibotuvas.setProgress(Glob.maksimaliReiksme / 2);
-        ((ProgressBar)(findViewById(R.id.mainGreitis))).setMax(Glob.maksimaliReiksme);
+        ((ProgressBar) (findViewById(R.id.mainGreitis))).setMax(Glob.maksimaliReiksme);
 
         ((JoystickView) (findViewById(R.id.mainLeftJoystick))).setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
@@ -67,10 +118,10 @@ public class Main extends AppCompatActivity {
                 mViewModel.mLeftX.set(temp[0]);
                 mViewModel.mLeftY.set(temp[1]);
 
-                mDronoValdymas.ChangeMotorStr();
+                mDronoValdymas.ChangeAllMotorStr();
 
             }
-        }, 1000/Glob.daznis);
+        }, 1000 / Glob.daznis);
 
         ((JoystickView) (findViewById(R.id.mainRightJoystick))).setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
@@ -78,8 +129,10 @@ public class Main extends AppCompatActivity {
                 double[] temp = Helper.Pole2XY(strength, angle);
                 mViewModel.mRightX.set(temp[0]);
                 mViewModel.mRightY.set(temp[1]);
+
+                mDronoValdymas.ChangeIndMotorStr();
             }
-        }, 1000/Glob.daznis);
+        }, 1000 / Glob.daznis);
 
     }
 

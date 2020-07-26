@@ -15,11 +15,18 @@ public class ViewModel extends BaseObservable {
 
     private Context kontekstas;
 
+    public ViewModel(Context context) {
+        this.kontekstas = context;
+    }
 
     /**
      * svarbiausios vertes
      */
     public final ObservableInt mMotorStr = new ObservableInt(0);
+    public final ObservableInt mMotorFL = new ObservableInt(0);
+    public final ObservableInt mMotorFR = new ObservableInt(0);
+    public final ObservableInt mMotorBL = new ObservableInt(0);
+    public final ObservableInt mMotorBR = new ObservableInt(0);
 
     /**
      * misc kintamieji
@@ -28,17 +35,22 @@ public class ViewModel extends BaseObservable {
     public final ObservableDouble mLeftY = new ObservableDouble(0);
     public final ObservableDouble mRightX = new ObservableDouble(0);
     public final ObservableDouble mRightY = new ObservableDouble(0);
-    public final ObservableInt maxSpeed = new ObservableInt(0);
+    public final ObservableInt maxSpeed = new ObservableInt(Glob.maksimaliReiksme / 2);
 
-    public ViewModel(Context context) {
-        this.kontekstas = context;
-    }
 
     /**
      * funkcijos atvaizdavimui
      */
-    public String coordX(double x){return String.format(Locale.ENGLISH,"%.2f", x);}
-    public String coordY(double y){return String.format(Locale.ENGLISH,"%.2f", y);}
-    public int getMotorStr(double str){return (int)str;}
+    public String coordX(double x) {
+        return String.format(Locale.ENGLISH, "X: %.4f", x);
+    }
+
+    public String coordY(double y) {
+        return String.format(Locale.ENGLISH, "Y: %.4f", y);
+    }
+
+    public int getMotorStr(double str) {
+        return (int) str;
+    }
 
 }
