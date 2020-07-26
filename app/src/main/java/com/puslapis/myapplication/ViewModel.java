@@ -1,22 +1,49 @@
 package com.puslapis.myapplication;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 
 import androidx.databinding.BaseObservable;
+import androidx.databinding.Observable;
 import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableDouble;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableInt;
+import androidx.lifecycle.Observer;
 
 import java.util.Locale;
 
 public class ViewModel extends BaseObservable {
-
-    private Context kontekstas;
+    private final String TAG = "Main->ViewModel";
+    private Main kontekstas;
 
     public ViewModel(Context context) {
-        this.kontekstas = context;
+        this.kontekstas = (Main) context;
+        mMotorFL.addOnPropertyChangedCallback(new OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                DataChangedFlag_Set();
+            }
+        });
+        mMotorFR.addOnPropertyChangedCallback(new OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                DataChangedFlag_Set();
+            }
+        });
+        mMotorBL.addOnPropertyChangedCallback(new OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                DataChangedFlag_Set();
+            }
+        });
+        mMotorBR.addOnPropertyChangedCallback(new OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                DataChangedFlag_Set();
+            }
+        });
     }
 
     /**
@@ -53,4 +80,10 @@ public class ViewModel extends BaseObservable {
         return (int) str;
     }
 
+    /**
+     * onPropertychangedCallbacks
+     */
+    private void DataChangedFlag_Set() {
+        kontekstas.mDataChangedFlag = true;
+    }
 }
