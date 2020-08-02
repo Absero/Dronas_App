@@ -1,21 +1,18 @@
 package com.puslapis.myapplication;
 
 import android.content.Context;
-import android.util.Log;
-import android.view.View;
 
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Observable;
-import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableDouble;
-import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableInt;
-import androidx.lifecycle.Observer;
+
+import com.puslapis.myapplication.misc.Glob;
 
 import java.util.Locale;
 
 public class ViewModel extends BaseObservable {
-    private final String TAG = "Main->ViewModel";
+    private final String TAG = "Main -> ViewModel";
     private Main kontekstas;
 
     public ViewModel(Context context) {

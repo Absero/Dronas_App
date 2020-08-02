@@ -2,8 +2,10 @@ package com.puslapis.myapplication;
 
 import android.content.Context;
 
+import com.puslapis.myapplication.misc.Glob;
+
 public class DronoValdymas {
-    private final String TAG = "DronoValdymas";
+    private final String TAG = "Main -> DronoValdymas";
 
     private Main context;
     private ViewModel mViewModel;

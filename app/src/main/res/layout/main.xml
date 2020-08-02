@@ -289,10 +289,12 @@
         <Button
             android:id="@+id/mainButtonConnect"
             android:layout_width="match_parent"
+            android:background="#1C7E00"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_toStartOf="@+id/mainRightJoystick"
             android:layout_toEndOf="@+id/mainLeftJoystick"
+            android:onClick="connect_click"
             android:text="Connect" />
     </RelativeLayout>
 </layout>
