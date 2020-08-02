@@ -22,8 +22,6 @@ import com.puslapis.myapplication.misc.Helper;
 import com.puslapis.myapplication.other.HorizontalNumberPicker;
 import com.puslapis.myapplication.other.Stopwatch;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executor;
@@ -174,8 +172,8 @@ public class Main extends AppCompatActivity {
                         mSiuntimoTaimeris.schedule(new TimerTask() {
                             @Override
                             public void run() {
-                                Log.d(TAG, "run: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS")));
-                                mTcpClient.sendMessage_noThread((LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS")) + "\n").getBytes());
+//                                Log.d(TAG, "timer \"run\": " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS")));
+                                mTcpClient.sendMessage_noThread(packData());
                             }
                         }, Glob.periodas_ms, Glob.periodas_ms);
 
@@ -284,8 +282,23 @@ public class Main extends AppCompatActivity {
         }
     }
 
-    public byte[] packData(){
-        return new byte[]{0};
+    public byte[] packData() {
+        // TODO: 2020-08-02 padaryt visa patikrinima ar duomenys pasikete ir panasiai
+        byte[] temp = new byte[]{(byte)'3',
+                (byte) (mViewModel.mMotorBL.get() & 0xff), (byte) ((mViewModel.mMotorBL.get() >> 8) & 0xff),
+                (byte) (mViewModel.mMotorFL.get() & 0xff), (byte) ((mViewModel.mMotorFL.get() >> 8) & 0xff),
+                (byte) (mViewModel.mMotorBR.get() & 0xff), (byte) ((mViewModel.mMotorBR.get() >> 8) & 0xff),
+                (byte) (mViewModel.mMotorFR.get() & 0xff), (byte) ((mViewModel.mMotorFR.get() >> 8) & 0xff),
+                0};
+        temp[9] = Helper.getCRC(temp, temp.length-1);
+
+//        StringBuilder sb = new StringBuilder();
+//        for(byte b:temp)
+//            sb.append(String.format("%02X ", b));
+//
+//        Log.d(TAG, "packData: " + sb.toString());
+
+        return temp;
     }
 
     /**

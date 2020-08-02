@@ -65,6 +65,7 @@ public class TcpClient {
             } catch (IOException e) {
                 Log.d(TAG, "run: " + e.getMessage());
             }
+//            Log.d(TAG, "sendMessage_thread: sent");
         }
     }
 
@@ -104,6 +105,7 @@ public class TcpClient {
             //create a socket to make the connection with the server
 
             try (Socket socket = new Socket(serverAddr, SERVER_PORT)) {
+                socket.setTcpNoDelay(true);
 
                 //for outgoing packets
                 mOutputStream = socket.getOutputStream();
