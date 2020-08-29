@@ -53,37 +53,10 @@ public class DronoValdymas {
     }
 
     private void UpdateAllMotorValues() {
-        mViewModel.mMotorFL.set(CalculateIndMotorValue("FL"));
-        mViewModel.mMotorFR.set(CalculateIndMotorValue("FR"));
-        mViewModel.mMotorBL.set(CalculateIndMotorValue("BL"));
-        mViewModel.mMotorBR.set(CalculateIndMotorValue("BR"));
-    }
-
-    private int CalculateIndMotorValue(String motor) {
-        double delta = 0;
-        int coeff = 0;
-
-        switch (motor) {
-            case "FL":
-                delta = mMotorFL_delta;
-                coeff = context.mCoeffFL.getValue();
-                break;
-            case "FR":
-                delta = mMotorFR_delta;
-                coeff = context.mCoeffFR.getValue();
-                break;
-            case "BL":
-                delta = mMotorBL_delta;
-                coeff = context.mCoeffBL.getValue();
-                break;
-            case "BR":
-                delta = mMotorBR_delta;
-                coeff = context.mCoeffBR.getValue();
-                break;
-            default:
-        }
-        return (int) mCurrentMotorSTR_double + (int) delta + coeff;
-
+        mViewModel.mMotorFL.set((int) (mCurrentMotorSTR_double + mMotorFL_delta));
+        mViewModel.mMotorFR.set((int) (mCurrentMotorSTR_double + mMotorFR_delta));
+        mViewModel.mMotorBL.set((int) (mCurrentMotorSTR_double + mMotorBL_delta));
+        mViewModel.mMotorBR.set((int) (mCurrentMotorSTR_double + mMotorBR_delta));
     }
 
     public void ResetAll() {

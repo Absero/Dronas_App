@@ -2,8 +2,10 @@ package com.puslapis.myapplication;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.format.Formatter;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -22,6 +24,7 @@ import com.puslapis.myapplication.misc.Helper;
 import com.puslapis.myapplication.other.HorizontalNumberPicker;
 import com.puslapis.myapplication.other.Stopwatch;
 
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executor;
@@ -173,7 +176,15 @@ public class Main extends AppCompatActivity {
                             @Override
                             public void run() {
 //                                Log.d(TAG, "timer \"run\": " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS")));
-                                mTcpClient.sendMessage_noThread(packData());
+                                byte[] paketas;
+                                if(mViewModel.mMotorBL.get()==mViewModel.mMotorFL.get() && mViewModel.mMotorFL.get()==mViewModel.mMotorBR.get() && mViewModel.mMotorBR.get()==mViewModel.mMotorFR.get()){
+                                    paketas = packData((byte)'H');
+                                }else{
+                                    paketas = packData((byte)'3');
+                                }
+
+                                mTcpClient.sendMessage_noThread(paketas);
+
                             }
                         }, Glob.periodas_ms, Glob.periodas_ms);
 
@@ -191,6 +202,9 @@ public class Main extends AppCompatActivity {
             }
         });
         //endregion switchas pradziai
+
+        String ip = Formatter.formatIpAddress(((WifiManager) Objects.requireNonNull(getSystemService(WIFI_SERVICE))).getConnectionInfo().getIpAddress());
+        Log.d(TAG, "onCreate: "+ ip);
     }
 
     //region funkcionavimo funkcijos
@@ -282,13 +296,21 @@ public class Main extends AppCompatActivity {
         }
     }
 
-    public byte[] packData() {
+    public byte[] packData(byte komandosKodas) {
         // TODO: 2020-08-02 padaryt visa patikrinima ar duomenys pasikete ir panasiai
-        byte[] temp = new byte[]{(byte)'3',
-                (byte) (mViewModel.mMotorBL.get() & 0xff), (byte) ((mViewModel.mMotorBL.get() >> 8) & 0xff),
-                (byte) (mViewModel.mMotorFL.get() & 0xff), (byte) ((mViewModel.mMotorFL.get() >> 8) & 0xff),
-                (byte) (mViewModel.mMotorBR.get() & 0xff), (byte) ((mViewModel.mMotorBR.get() >> 8) & 0xff),
-                (byte) (mViewModel.mMotorFR.get() & 0xff), (byte) ((mViewModel.mMotorFR.get() >> 8) & 0xff),
+
+        int[] tempVertes = new int[4];
+
+        tempVertes[0]=mViewModel.mMotorBL.get();
+        tempVertes[1]=mViewModel.mMotorFL.get();
+        tempVertes[2]=mViewModel.mMotorBR.get();
+        tempVertes[3]=mViewModel.mMotorFR.get();
+
+        byte[] temp = new byte[]{komandosKodas,
+                (byte) (tempVertes[0] & 0xff), (byte) ((tempVertes[0] >> 8) & 0xff),
+                (byte) (tempVertes[1] & 0xff), (byte) ((tempVertes[1] >> 8) & 0xff),
+                (byte) (tempVertes[2] & 0xff), (byte) ((tempVertes[2] >> 8) & 0xff),
+                (byte) (tempVertes[3] & 0xff), (byte) ((tempVertes[3] >> 8) & 0xff),
                 0};
         temp[9] = Helper.getCRC(temp, temp.length-1);
 
